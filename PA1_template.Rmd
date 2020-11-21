@@ -67,11 +67,18 @@ daily.data <- processed.data %>% filter(!is.na(steps)) %>% group_by(interval) %>
   summarize(average_steps = mean(steps))
 
 # Plot the Time Series Plot on 5-minute interval for average steps taken:
-plot_ly(daily.data, x=~interval, y=~average_steps, type='scatter', 
-               mode='lines') %>%
-  layout(title="Average Daily Activity Pattern",
-         xaxis = list(title="Interval (5 minute)"), 
-         yaxis = list(title="Average Steps"))
+# plot_ly(daily.data, x=~interval, y=~average_steps, type='scatter', 
+#                mode='lines') %>%
+#   layout(title="Average Daily Activity Pattern",
+#          xaxis = list(title="Interval (5 minute)"), 
+#          yaxis = list(title="Average Steps"))
+
+p <- ggplot(daily.data) +
+  geom_line(aes(x=factor(interval), y=average_steps, group=1)) +
+  scale_x_discrete(breaks=daily.data$interval[c(T,rep(F,time=29))]) +
+  theme(axis.text.x = element_text(angle = -90, hjust = 1),
+        axis.title.x = element_blank()) 
+p
 
 # Determine Which 5-minute interval contains maximum number of steps: 
 cat(paste0("Interval (5-min) Containing Max Steps: ", 
@@ -139,7 +146,7 @@ p <- ggplot(new.processed.data, aes(x=interval, y=steps)) +
   theme(axis.text.x = element_text(angle = -90, hjust = 1),
         axis.title.x = element_blank()) 
 
-ggplotly(p=p)
+p
 
 
 
