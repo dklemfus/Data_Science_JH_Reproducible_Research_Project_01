@@ -40,7 +40,7 @@ processed.data <- raw.data %>% mutate(
 ```
 
 ### What is mean total number of steps taken per day?
-```{r mean_steps, echo=F}
+```{r mean_steps}
 # Create clean data with NA values removed:
 step.data <- processed.data %>% filter(!is.na(steps)) %>% group_by(date)
 
@@ -61,7 +61,7 @@ cat(paste0("Median Total Number of Steps Per Day: ", median.steps))
 ```
 
 ### What is the average daily activity pattern?
-``` {r daily_activity, echo=F, warning=FALSE}
+``` {r daily_activity,warning=FALSE}
 # Determine the average steps per 5-minute interval over data set: 
 daily.data <- processed.data %>% filter(!is.na(steps)) %>% group_by(interval) %>%
   summarize(average_steps = mean(steps))
@@ -82,7 +82,7 @@ cat(paste0("Interval (5-min) Containing Max Steps: ",
 
 
 ### Imputing missing values
-``` {R missing_values, echo=F}
+``` {R missing_values}
 # Determine number of missing values: 
 missing <- sum(is.na(processed.data$steps)) # Note: Other fields didn't contain NA
 cat(paste0("Total Number of Missing Values (NA): ", missing))
@@ -124,7 +124,7 @@ if (sum(new.total.steps$Count) > sum(total.steps$Count)){
 ```
 
 ### Are there differences in activity patterns between weekdays and weekends?
-``` {R weekday_weekend, echo=F, warning=F}
+``` {R weekday_weekend,warning=F}
 new.processed.data <- new.processed.data %>% mutate(
   weekday = weekdays(date),
   w = case_when(grepl('Saturday|Sunday',weekday) ~ "Weekend",
