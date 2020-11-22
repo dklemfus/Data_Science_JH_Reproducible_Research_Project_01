@@ -16,7 +16,6 @@ output:
 # dplyr
 # data.table
 # ggplot2
-# plotly
 
 # Load compressed data:
 raw.data <- read.csv(unzip('./activity.zip'))
@@ -39,8 +38,8 @@ step.data <- processed.data %>% filter(!is.na(steps)) %>% group_by(date)
 total.steps <- step.data %>% summarize(Count = sum(steps))
 
 # Determine Mean/Median of steps per day: 
-mean.steps <- mean(step.data$steps, na.rm=T)
-median.steps <- median(step.data$steps, na.rm=T)
+mean.steps <- round(mean(total.steps$Count, na.rm=T),0)
+median.steps <- round(median(total.steps$Count, na.rm=T),0)
 
 # Create Histogram showing total number of steps per day: 
 hist(total.steps$Count, xlab = "Steps Taken Per Day", 
@@ -54,7 +53,7 @@ cat(paste0("Mean Total Number of Steps Per Day: ", mean.steps))
 ```
 
 ```
-## Mean Total Number of Steps Per Day: 37.3825995807128
+## Mean Total Number of Steps Per Day: 10766
 ```
 
 ```r
@@ -62,7 +61,7 @@ cat(paste0("Median Total Number of Steps Per Day: ", median.steps))
 ```
 
 ```
-## Median Total Number of Steps Per Day: 0
+## Median Total Number of Steps Per Day: 10765
 ```
 
 ### What is the average daily activity pattern?
@@ -73,18 +72,11 @@ daily.data <- processed.data %>% filter(!is.na(steps)) %>% group_by(interval) %>
   summarize(average_steps = mean(steps))
 
 # Plot the Time Series Plot on 5-minute interval for average steps taken:
-# plot_ly(daily.data, x=~interval, y=~average_steps, type='scatter', 
-#                mode='lines') %>%
-#   layout(title="Average Daily Activity Pattern",
-#          xaxis = list(title="Interval (5 minute)"), 
-#          yaxis = list(title="Average Steps"))
-
-p <- ggplot(daily.data) +
+ggplot(daily.data) +
   geom_line(aes(x=factor(interval), y=average_steps, group=1)) +
-  scale_x_discrete(breaks=daily.data$interval[c(T,rep(F,time=29))]) +
+  scale_x_discrete(breaks=daily.data$interval[c(T,rep(F,times=29))]) +
   theme(axis.text.x = element_text(angle = -90, hjust = 1),
         axis.title.x = element_blank()) 
-p
 ```
 
 ![](PA1_template_files/figure-html/daily_activity-1.png)<!-- -->
@@ -134,8 +126,8 @@ new.processed.data <- processed.data %>% mutate(
 new.total.steps <- new.processed.data %>% group_by(date) %>% summarize(Count = sum(steps))
 
 # Determine Mean/Median of steps per day after correction: 
-new.mean.steps <- mean(new.processed.data$steps)
-new.median.steps <- median(new.processed.data$steps)
+new.mean.steps <- round(mean(new.total.steps$Count),0)
+new.median.steps <- round(median(new.total.steps$Count),0)
 
 hist(new.total.steps$Count, xlab = "Steps Taken Per Day (Including Missing Correction)", 
      main="Histogram: Steps Taken Per Day")
@@ -148,7 +140,7 @@ cat(paste0("Mean Total Number of Steps Per Day (corrected): ", new.mean.steps))
 ```
 
 ```
-## Mean Total Number of Steps Per Day (corrected): 37.3825995807128
+## Mean Total Number of Steps Per Day (corrected): 10766
 ```
 
 ```r
@@ -156,7 +148,7 @@ cat(paste0("Median Total Number of Steps Per Day (corrected): ", new.median.step
 ```
 
 ```
-## Median Total Number of Steps Per Day (corrected): 0
+## Median Total Number of Steps Per Day (corrected): 10766
 ```
 
 ```r
@@ -185,15 +177,13 @@ new.processed.data <- new.processed.data %>% mutate(
                 TRUE ~ "Weekday")
 )
 
-p <- ggplot(new.processed.data, aes(x=interval, y=steps)) +
+# Render Plot of weekday vs. weekends
+ggplot(new.processed.data, aes(x=interval, y=steps)) +
   geom_line() +
-  # facet_grid(. ~ w, scales="free_x")
   scale_x_discrete(breaks=new.processed.data$interval[c(T,rep(F,time=29))]) +
   facet_wrap(~w, ncol=1) +
   theme(axis.text.x = element_text(angle = -90, hjust = 1),
-        axis.title.x = element_blank()) 
-
-p
+        axis.title.x = element_blank())
 ```
 
 ![](PA1_template_files/figure-html/weekday_weekend-1.png)<!-- -->
